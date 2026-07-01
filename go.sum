@@ -1,5 +1,7 @@
 github.com/AndreRenaud/gore v0.0.0-20260615074156-c97e97a10e09 h1:QF1sCKi5WTjI/0cW+eWF9rdbIj7RovubjpArk4AD3OU=
 github.com/AndreRenaud/gore v0.0.0-20260615074156-c97e97a10e09/go.mod h1:AAhSJZxKzV2LL0w+qBlHOfRnFXe8yZLRZdv8Ws6wfJc=
+github.com/mmulet/term.everything v0.0.0-20260318191931-c8e04be0ae9a h1:i7wROLLDuGPFOJdxG+nmYOz1e7/B2aK/tFTYjfh51R0=
+github.com/mmulet/term.everything v0.0.0-20260318191931-c8e04be0ae9a/go.mod h1:dffzX0qGkOAMkMwrroOvvjd9rrY76zFHk7MUjL5fwSM=
 github.com/olegfedoseev/image-diff v0.0.0-20171116094004-897a4e73dfd6 h1:a/kynVgbdXJQDq3WWTgwL0bHyg4hu4/oIK9UB+Ugvfo=
 github.com/olegfedoseev/image-diff v0.0.0-20171116094004-897a4e73dfd6/go.mod h1:OgMVaRcJ1TgmPHB/MF2YaHOzRxmw6vVG/DquoMhkCiY=
 golang.org/x/net v0.56.0 h1:Rw8j/hFzGvJUZwNBXnAtf5sVDVt+65SK2C7IxCxZt5o=

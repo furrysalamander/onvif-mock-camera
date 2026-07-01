@@ -6,6 +6,7 @@ import (
 
 	"github.com/furrysalamander/onvif-mock-camera"
 	"github.com/furrysalamander/onvif-mock-camera/doom"
+	"github.com/furrysalamander/onvif-mock-camera/types"
 )
 
 func main() {
@@ -16,11 +17,11 @@ func main() {
 		WarpMap:     1,
 	})
 
-	cam, err := onvifmock.NewCamera(onvifmock.Config{
+	cam, err := onvifmock.NewCamera(types.Config{
 		DeviceName: "My DOOM Camera",
 		HostIP:     "127.0.0.1",
 		OnvifPort:  8080,
-		RtspPort:   554,
+		RtspPort:   8554,
 		Source:     src,
 	})
 	if err != nil {

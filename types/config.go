@@ -1,4 +1,4 @@
-package onvifmock
+package types
 
 import (
 	"os"

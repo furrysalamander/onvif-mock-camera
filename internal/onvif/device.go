@@ -1,6 +1,7 @@
-package onvifmock
+package onvif
 
 import (
+	"github.com/furrysalamander/onvif-mock-camera/types"
 	"bytes"
 	"encoding/xml"
 	"fmt"
@@ -63,7 +64,7 @@ type PTZCapabilities struct {
 	XAddr string `xml:"http://www.onvif.org/ver10/schema XAddr"`
 }
 
-func handleDevice(bodyXML []byte, cfg Config) (any, error) {
+func handleDevice(bodyXML []byte, cfg types.Config) (any, error) {
 	op, err := getOperationName(bodyXML)
 	if err != nil {
 		return nil, err
@@ -71,26 +72,26 @@ func handleDevice(bodyXML []byte, cfg Config) (any, error) {
 
 	ip := cfg.HostIP
 	if ip == "" {
-		ip = DefaultHostIP
+		ip = types.DefaultHostIP
 	}
 	port := fmt.Sprintf("%d", cfg.OnvifPort)
 	if cfg.OnvifPort == 0 {
-		port = fmt.Sprintf("%d", DefaultOnvifPort)
+		port = fmt.Sprintf("%d", types.DefaultOnvifPort)
 	}
 
 	switch op {
 	case "GetDeviceInformation":
 		mfr := cfg.Manufacturer
 		if mfr == "" {
-			mfr = DefaultManufacturer
+			mfr = types.DefaultManufacturer
 		}
 		model := cfg.Model
 		if model == "" {
-			model = DefaultModel
+			model = types.DefaultModel
 		}
 		fw := cfg.FirmwareVersion
 		if fw == "" {
-			fw = DefaultFirmwareVersion
+			fw = types.DefaultFirmwareVersion
 		}
 		uuid := cfg.DeviceUUID
 		if uuid == "" {
@@ -98,7 +99,7 @@ func handleDevice(bodyXML []byte, cfg Config) (any, error) {
 		}
 		name := cfg.DeviceName
 		if name == "" {
-			name = DefaultDeviceName
+			name = types.DefaultDeviceName
 		}
 		return GetDeviceInformationResponse{
 			Manufacturer:    mfr,

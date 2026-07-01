@@ -7,4 +7,7 @@ require (
 	golang.org/x/net v0.56.0
 )
 
-require golang.org/x/sys v0.46.0 // indirect
+require (
+	github.com/mmulet/term.everything v0.0.0-20260318191931-c8e04be0ae9a // indirect
+	golang.org/x/sys v0.46.0 // indirect
+)

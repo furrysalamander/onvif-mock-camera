@@ -1,6 +1,7 @@
-package onvifmock
+package onvif
 
 import (
+	"github.com/furrysalamander/onvif-mock-camera/types"
 	"encoding/xml"
 	"fmt"
 )
@@ -15,7 +16,7 @@ type GetStreamUriResponse struct {
 	MediaUri MediaUri `xml:"http://www.onvif.org/ver10/media/wsdl MediaUri"`
 }
 
-func handleMedia(bodyXML []byte, cfg Config) (any, error) {
+func handleMedia(bodyXML []byte, cfg types.Config) (any, error) {
 	op, err := getOperationName(bodyXML)
 	if err != nil {
 		return nil, err
@@ -23,19 +24,19 @@ func handleMedia(bodyXML []byte, cfg Config) (any, error) {
 
 	w := cfg.VideoWidth
 	if w == 0 {
-		w = DefaultVideoWidth
+		w = types.DefaultVideoWidth
 	}
 	h := cfg.VideoHeight
 	if h == 0 {
-		h = DefaultVideoHeight
+		h = types.DefaultVideoHeight
 	}
 	hostIP := cfg.HostIP
 	if hostIP == "" {
-		hostIP = DefaultHostIP
+		hostIP = types.DefaultHostIP
 	}
 	rtspPort := fmt.Sprintf("%d", cfg.RtspPort)
 	if cfg.RtspPort == 0 {
-		rtspPort = fmt.Sprintf("%d", DefaultRtspPort)
+		rtspPort = fmt.Sprintf("%d", types.DefaultRtspPort)
 	}
 
 	switch op {

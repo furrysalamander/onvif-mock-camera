@@ -1,6 +1,7 @@
-package onvifmock
+package onvif
 
 import (
+	"github.com/furrysalamander/onvif-mock-camera/types"
 	"fmt"
 	"log"
 	"net"
@@ -9,7 +10,7 @@ import (
 	"golang.org/x/net/ipv4"
 )
 
-func runDiscovery(cfg Config) {
+func RunDiscovery(cfg types.Config) {
 	addr := net.UDPAddr{
 		IP:   net.IPv4(239, 255, 255, 250),
 		Port: 3702,
@@ -61,7 +62,7 @@ func isProbe(msg string) bool {
 	return strings.Contains(msg, ":Probe") || strings.Contains(msg, "Probe>")
 }
 
-func buildProbeMatch(probeMsg string, cfg Config) string {
+func buildProbeMatch(probeMsg string, cfg types.Config) string {
 	msgID := extractTagContent(probeMsg, "MessageID")
 	if msgID == "" {
 		return ""
@@ -78,11 +79,11 @@ func buildProbeMatch(probeMsg string, cfg Config) string {
 
 	hostIP := cfg.HostIP
 	if hostIP == "" {
-		hostIP = DefaultHostIP
+		hostIP = types.DefaultHostIP
 	}
 	port := fmt.Sprintf("%d", cfg.OnvifPort)
 	if cfg.OnvifPort == 0 {
-		port = fmt.Sprintf("%d", DefaultOnvifPort)
+		port = fmt.Sprintf("%d", types.DefaultOnvifPort)
 	}
 
 	return fmt.Sprintf(

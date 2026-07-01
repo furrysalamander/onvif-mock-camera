@@ -9,18 +9,22 @@ import (
 	"os/signal"
 	"sync"
 	"syscall"
+
+	"github.com/furrysalamander/onvif-mock-camera/internal/onvif"
+	"github.com/furrysalamander/onvif-mock-camera/internal/rtsp"
+	"github.com/furrysalamander/onvif-mock-camera/types"
 )
 
 type Camera struct {
-	cfg         Config
+	cfg         types.Config
 	onvifServer *http.Server
-	rtsp        *rtspServer
+	rtsp        *rtsp.Server
 	mu          sync.Mutex
 	running     bool
 	stopCh      chan struct{}
 }
 
-func NewCamera(cfg Config) (*Camera, error) {
+func NewCamera(cfg types.Config) (*Camera, error) {
 	if cfg.Source == nil {
 		return nil, fmt.Errorf("VideoSource is required")
 	}
@@ -40,7 +44,7 @@ func (c *Camera) Start() error {
 	cfg := c.cfg
 	onvifAddr := fmt.Sprintf(":%d", cfg.OnvifPort)
 	if cfg.OnvifPort == 0 {
-		onvifAddr = fmt.Sprintf(":%d", DefaultOnvifPort)
+		onvifAddr = fmt.Sprintf(":%d", types.DefaultOnvifPort)
 	}
 
 	frameCh, err := cfg.Source.Start()
@@ -48,23 +52,23 @@ func (c *Camera) Start() error {
 		return fmt.Errorf("source start: %w", err)
 	}
 
-	rtsp, err := newRTSPServer(cfg)
+	rtsp, err := rtsp.NewServer(cfg)
 	if err != nil {
 		return fmt.Errorf("rtsp server: %w", err)
 	}
 	c.rtsp = rtsp
 
-	if err := rtsp.startServer(); err != nil {
+	if err := rtsp.StartServer(); err != nil {
 		return fmt.Errorf("mediamtx: %w", err)
 	}
-	if err := rtsp.startWithFrames(frameCh, cfg); err != nil {
-		rtsp.close()
+	if err := rtsp.StartWithFrames(frameCh, cfg); err != nil {
+		rtsp.Close()
 		return fmt.Errorf("rtsp pipeline: %w", err)
 	}
 
-	c.onvifServer = startOnvifServer(onvifAddr, cfg, cfg.Source)
+	c.onvifServer = onvif.StartServer(onvifAddr, cfg, cfg.Source)
 
-	go runDiscovery(cfg)
+	go onvif.RunDiscovery(cfg)
 
 	c.running = true
 	log.Printf("Camera started: ONVIF on %s, RTSP on :%d", onvifAddr, cfg.RtspPort)
@@ -82,7 +86,7 @@ func (c *Camera) Stop() error {
 		c.onvifServer.Shutdown(context.Background())
 	}
 	if c.rtsp != nil {
-		c.rtsp.close()
+		c.rtsp.Close()
 	}
 	if c.cfg.Source != nil {
 		c.cfg.Source.Stop()

@@ -7,40 +7,49 @@ import (
 
 	"github.com/furrysalamander/onvif-mock-camera"
 	"github.com/furrysalamander/onvif-mock-camera/doom"
+	"github.com/furrysalamander/onvif-mock-camera/types"
 )
+
+var sourceFactories = map[string]func(cfg *types.Config, cmd string){}
+
+func registerSource(name string, fn func(cfg *types.Config, cmd string)) {
+	sourceFactories[name] = fn
+}
 
 func main() {
 	wadPath := flag.String("wad", os.Getenv("ONVIF_WAD_PATH"), "Path to DOOM WAD file")
 	skill := flag.Int("skill", 2, "Skill level (1-4)")
-	warpEp := flag.Int("warp-episode", 1, "Starting episode (DOOM 1 only)")
+	warpEp := flag.Int("warp-episode", 1, "Starting episode")
 	warpMap := flag.Int("warp-map", 1, "Starting map")
+	waylandCmd := flag.String("wayland", os.Getenv("ONVIF_WAYLAND_CMD"), "Command to run as Wayland client")
 	verbose := flag.Bool("verbose", false, "Verbose logging")
+
 	flag.Parse()
 
-	cfg := onvifmock.ConfigFromEnv()
-
+	cfg := types.ConfigFromEnv()
 	if *verbose {
 		cfg.Verbose = true
 	}
 
-	var src onvifmock.VideoSource
-
 	switch {
 	case *wadPath != "":
-		src = doom.New(doom.Config{
+		cfg.Source = doom.New(doom.Config{
 			WADPath:     *wadPath,
 			Skill:       *skill,
 			WarpEpisode: *warpEp,
 			WarpMap:     *warpMap,
 		})
+		if cfg.DeviceName == types.DefaultDeviceName {
+			cfg.DeviceName = "DOOM Camera"
+		}
+	case *waylandCmd != "":
+		if fn, ok := sourceFactories["wayland"]; ok {
+			fn(&cfg, *waylandCmd)
+		} else {
+			log.Fatal("wayland support not compiled in (build with -tags wayland)")
+		}
 	default:
-		log.Fatal("no video source specified: use --wad <path>")
-	}
-
-	cfg.Source = src
-
-	if cfg.DeviceName == onvifmock.DefaultDeviceName {
-		cfg.DeviceName = "DOOM Camera"
+		log.Fatal("no source specified: use --wad <path> or --wayland <cmd>")
 	}
 
 	cam, err := onvifmock.NewCamera(cfg)

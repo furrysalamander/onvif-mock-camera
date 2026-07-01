@@ -1,6 +1,7 @@
-package onvifmock
+package onvif
 
 import (
+	"github.com/furrysalamander/onvif-mock-camera/types"
 	"image"
 	"strings"
 	"testing"
@@ -59,7 +60,7 @@ func TestDeviceService(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			resp, err := handleDeviceService([]byte(tt.body), Config{})
+			resp, err := handleDeviceService([]byte(tt.body), types.Config{})
 			if err != nil {
 				t.Fatalf("handleDeviceService: %v", err)
 			}
@@ -90,7 +91,7 @@ func TestMediaService(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			resp, err := handleMediaService([]byte(tt.body), Config{})
+			resp, err := handleMediaService([]byte(tt.body), types.Config{})
 			if err != nil {
 				t.Fatalf("handleMediaService: %v", err)
 			}

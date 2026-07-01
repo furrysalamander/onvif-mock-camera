@@ -1,4 +1,4 @@
-package onvifmock
+package rtsp
 
 import (
 	"context"
@@ -10,11 +10,13 @@ import (
 	"os/exec"
 	"path/filepath"
 	"sync"
+
+	"github.com/furrysalamander/onvif-mock-camera/types"
 	"time"
 )
 
-type rtspServer struct {
-	cfg          Config
+type Server struct {
+	cfg          types.Config
 	mediamtxCmd  *exec.Cmd
 	ffmpegCmd    *exec.Cmd
 	cancel       context.CancelFunc
@@ -24,7 +26,7 @@ type rtspServer struct {
 	mediamtxPath string
 }
 
-func newRTSPServer(cfg Config) (*rtspServer, error) {
+func NewServer(cfg types.Config) (*Server, error) {
 	ffmpeg := cfg.FFmpegPath
 	if ffmpeg == "" {
 		ffmpeg = "ffmpeg"
@@ -33,20 +35,20 @@ func newRTSPServer(cfg Config) (*rtspServer, error) {
 	if mediamtx == "" {
 		mediamtx = "mediamtx"
 	}
-	return &rtspServer{
+	return &Server{
 		cfg:          cfg,
 		ffmpegPath:   ffmpeg,
 		mediamtxPath: mediamtx,
 	}, nil
 }
 
-func (rs *rtspServer) startServer() error {
+func (rs *Server) StartServer() error {
 	rs.mu.Lock()
 	defer rs.mu.Unlock()
 
 	rtspPort := rs.cfg.RtspPort
 	if rtspPort == 0 {
-		rtspPort = DefaultRtspPort
+		rtspPort = types.DefaultRtspPort
 	}
 
 	configYAML := fmt.Sprintf(`rtspAddress: :%d
@@ -94,23 +96,23 @@ paths:
 	return nil
 }
 
-func (rs *rtspServer) startWithFrames(frameCh <-chan *image.RGBA, cfg Config) error {
+func (rs *Server) StartWithFrames(frameCh <-chan *image.RGBA, cfg types.Config) error {
 	w := cfg.VideoWidth
 	if w == 0 {
-		w = DefaultVideoWidth
+		w = types.DefaultVideoWidth
 	}
 	h := cfg.VideoHeight
 	if h == 0 {
-		h = DefaultVideoHeight
+		h = types.DefaultVideoHeight
 	}
 	fps := cfg.Framerate
 	if fps == 0 {
-		fps = DefaultFramerate
+		fps = types.DefaultFramerate
 	}
 
 	rtspPort := cfg.RtspPort
 	if rtspPort == 0 {
-		rtspPort = DefaultRtspPort
+		rtspPort = types.DefaultRtspPort
 	}
 
 	ctx, cancel := context.WithCancel(context.Background())
@@ -190,7 +192,7 @@ func (rs *rtspServer) startWithFrames(frameCh <-chan *image.RGBA, cfg Config) er
 	return nil
 }
 
-func (rs *rtspServer) close() {
+func (rs *Server) Close() {
 	rs.mu.Lock()
 	defer rs.mu.Unlock()
 

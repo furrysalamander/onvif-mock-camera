@@ -1,4 +1,4 @@
-package onvifmock
+package onvif
 
 import "encoding/xml"
 

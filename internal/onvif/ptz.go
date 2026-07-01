@@ -1,6 +1,7 @@
-package onvifmock
+package onvif
 
 import (
+	"github.com/furrysalamander/onvif-mock-camera/types"
 	"encoding/xml"
 	"fmt"
 )
@@ -42,7 +43,7 @@ type ptzEmptyResponse struct {
 	XMLName xml.Name
 }
 
-func handlePTZ(nsDecls string, bodyXML []byte, source VideoSource) (any, error) {
+func handlePTZ(nsDecls string, bodyXML []byte, source types.VideoSource) (any, error) {
 	op, err := getOperationName(bodyXML)
 	if err != nil {
 		return nil, err

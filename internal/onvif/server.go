@@ -1,6 +1,7 @@
-package onvifmock
+package onvif
 
 import (
+	"github.com/furrysalamander/onvif-mock-camera/types"
 	"bytes"
 	"encoding/xml"
 	"fmt"
@@ -10,7 +11,7 @@ import (
 	"strings"
 )
 
-func startOnvifServer(addr string, cfg Config, source VideoSource) *http.Server {
+func StartServer(addr string, cfg types.Config, source types.VideoSource) *http.Server {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("/onvif/device_service", func(w http.ResponseWriter, r *http.Request) {
@@ -86,7 +87,7 @@ func startOnvifServer(addr string, cfg Config, source VideoSource) *http.Server 
 	return srv
 }
 
-func handleDeviceService(bodyBytes []byte, cfg Config) ([]byte, error) {
+func handleDeviceService(bodyBytes []byte, cfg types.Config) ([]byte, error) {
 	nsDecls, bodyXML, err := parseEnvelope(bodyBytes)
 	if err != nil {
 		return nil, err
@@ -98,7 +99,7 @@ func handleDeviceService(bodyBytes []byte, cfg Config) ([]byte, error) {
 	return buildResponse(nsDecls, inner)
 }
 
-func handleMediaService(bodyBytes []byte, cfg Config) ([]byte, error) {
+func handleMediaService(bodyBytes []byte, cfg types.Config) ([]byte, error) {
 	nsDecls, bodyXML, err := parseEnvelope(bodyBytes)
 	if err != nil {
 		return nil, err
@@ -110,7 +111,7 @@ func handleMediaService(bodyBytes []byte, cfg Config) ([]byte, error) {
 	return buildResponse(nsDecls, inner)
 }
 
-func handlePTZService(bodyBytes []byte, source VideoSource) ([]byte, error) {
+func handlePTZService(bodyBytes []byte, source types.VideoSource) ([]byte, error) {
 	nsDecls, bodyXML, err := parseEnvelope(bodyBytes)
 	if err != nil {
 		return nil, err
