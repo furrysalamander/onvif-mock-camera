@@ -1,0 +1,26 @@
+services:
+  camera-1:
+    build: .
+    environment:
+      ONVIF_HOST_IP: camera-1
+      ONVIF_DEVICE_NAME: "DOOM Camera 1"
+      ONVIF_DEVICE_UUID: "00000000-0000-0000-0000-000000000001"
+      RTSP_PORT: 8554
+      ONVIF_PORT: 8080
+    volumes:
+      - ./doom1.wad:/wads/doom1.wad:ro
+    command: --wad /wads/doom1.wad
+    restart: unless-stopped
+
+  camera-2:
+    build: .
+    environment:
+      ONVIF_HOST_IP: camera-2
+      ONVIF_DEVICE_NAME: "DOOM Camera 2"
+      ONVIF_DEVICE_UUID: "00000000-0000-0000-0000-000000000002"
+      RTSP_PORT: 8554
+      ONVIF_PORT: 8080
+    volumes:
+      - ./doom1.wad:/wads/doom1.wad:ro
+    command: --wad /wads/doom1.wad --warp-episode 1 --warp-map 2
+    restart: unless-stopped

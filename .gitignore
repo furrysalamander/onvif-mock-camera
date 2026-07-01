@@ -1,0 +1,24 @@
+# Binaries
+onvif-camera
+simple
+*.exe
+*.test
+*.out
+
+# WAD files (copyrighted - user provides their own)
+*.wad
+
+# Save games
+.savegame/
+.default.cfg
+
+# Go
+vendor/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# OS
+.DS_Store
