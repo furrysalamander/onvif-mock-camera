@@ -1,4 +1,3 @@
-//go:build wayland
 package wayland
 
 import (
@@ -10,7 +9,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/mmulet/term.everything/wayland"
+	"github.com/furrysalamander/term.everything/wayland"
 )
 
 type Config struct {
