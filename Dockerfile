@@ -24,7 +24,7 @@ RUN ARCH_DIR=$([ "$TARGETARCH" = "arm64" ] && echo "arm64" || echo "amd64") && \
     | tar xJ -C /tmp && \
     find /tmp -name ffmpeg -type f -exec cp {} /ffmpeg \;
 
-RUN ARCH_DIR=$([ "$TARGETARCH" = "arm64" ] && echo "arm64v8" || echo "amd64") && \
+RUN ARCH_DIR=$([ "$TARGETARCH" = "arm64" ] && echo "arm64" || echo "amd64") && \
     curl -sL "https://github.com/bluenviron/mediamtx/releases/download/${MEDIAMTX_VERSION}/mediamtx_${MEDIAMTX_VERSION}_linux_${ARCH_DIR}.tar.gz" \
     | tar xz -C /tmp && \
     cp /tmp/mediamtx /mediamtx
