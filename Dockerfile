@@ -19,20 +19,29 @@ ARG MEDIAMTX_VERSION
 
 RUN apk add --no-cache curl xz tar
 
-RUN ARCH_DIR=$([ "$TARGETARCH" = "arm64" ] && echo "arm64" || echo "amd64") && \
-    curl -sL "https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-${ARCH_DIR}-static.tar.xz" \
-    | tar xJ -C /tmp && \
-    find /tmp -name ffmpeg -type f -exec cp {} /ffmpeg \;
+RUN set -e; ARCH_DIR=$([ "$TARGETARCH" = "arm64" ] && echo "arm64" || echo "amd64"); \
+    URL="https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-${ARCH_DIR}-static.tar.xz"; \
+    for i in $(seq 1 5); do \
+        echo "fetching ffmpeg (attempt $i): $URL"; \
+        curl -fsSL --retry 3 "$URL" -o /tmp/ffmpeg.tar.xz && break; \
+        sleep 5; \
+    done; \
+    tar xJf /tmp/ffmpeg.tar.xz -C /tmp; \
+    find /tmp -name ffmpeg -type f -exec cp {} /ffmpeg \; ; \
+    rm /tmp/ffmpeg.tar.xz
 
-RUN ARCH_DIR=$([ "$TARGETARCH" = "arm64" ] && echo "arm64" || echo "amd64") && \
-    curl -sL "https://github.com/bluenviron/mediamtx/releases/download/${MEDIAMTX_VERSION}/mediamtx_${MEDIAMTX_VERSION}_linux_${ARCH_DIR}.tar.gz" \
-    | tar xz -C /tmp && \
-    cp /tmp/mediamtx /mediamtx
+RUN set -e; ARCH_DIR=$([ "$TARGETARCH" = "arm64" ] && echo "arm64" || echo "amd64"); \
+    URL="https://github.com/bluenviron/mediamtx/releases/download/${MEDIAMTX_VERSION}/mediamtx_${MEDIAMTX_VERSION}_linux_${ARCH_DIR}.tar.gz"; \
+    echo "fetching mediamtx: $URL"; \
+    curl -fsSL --retry 5 "$URL" -o /tmp/mediamtx.tar.gz; \
+    tar xzf /tmp/mediamtx.tar.gz -C /tmp; \
+    cp /tmp/mediamtx /mediamtx; \
+    rm /tmp/mediamtx.tar.gz
 
 FROM alpine:3.22
 RUN apk add --no-cache ca-certificates tzdata
 COPY --from=builder /onvif-camera /usr/local/bin/onvif-camera
 COPY --from=fetcher /ffmpeg /usr/local/bin/ffmpeg
 COPY --from=fetcher /mediamtx /usr/local/bin/mediamtx
-EXPOSE 8080 554
+EXPOSE 8080 8554
 ENTRYPOINT ["/usr/local/bin/onvif-camera"]
